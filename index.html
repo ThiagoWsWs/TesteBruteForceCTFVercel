@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CTF Login</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --error: #f87171;
+      --ok: #4ade80;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    }
+    .card {
+      background: var(--card);
+      padding: 2rem;
+      border-radius: 12px;
+      width: 320px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+    h1 {
+      font-size: 1.1rem;
+      margin: 0 0 1.25rem;
+      color: var(--accent);
+    }
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+    }
+    input {
+      width: 100%;
+      padding: 0.6rem 0.7rem;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+    button {
+      width: 100%;
+      padding: 0.7rem;
+      border: none;
+      border-radius: 6px;
+      background: var(--accent);
+      color: #0f172a;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover { opacity: 0.9; }
+    #msg {
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      min-height: 1.2em;
+    }
+    #msg.error { color: var(--error); }
+    #msg.ok { color: var(--ok); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🔐 CTF Login</h1>
+    <form id="loginForm">
+      <label for="username">Usuário</label>
+      <input type="text" id="username" name="username" autocomplete="off" required>
+      <label for="password">Senha</label>
+      <input type="password" id="password" name="password" autocomplete="off" required>
+      <button type="submit">Entrar</button>
+      <div id="msg"></div>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const msg = document.getElementById('msg');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.textContent = 'Verificando...';
+      msg.className = '';
+
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          msg.textContent = '✅ ' + data.message;
+          msg.className = 'ok';
+        } else {
+          msg.textContent = '❌ ' + (data.message || 'Credenciais inválidas');
+          msg.className = 'error';
+        }
+      } catch (err) {
+        msg.textContent = '❌ Erro de conexão';
+        msg.className = 'error';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "name": "ctf-login",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Site de login simples para teste de forca bruta (CTF proprio)"
+}
